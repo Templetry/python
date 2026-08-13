@@ -1,0 +1,1 @@
+"""TemplateApp - command line tool."""

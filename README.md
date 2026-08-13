@@ -4,7 +4,8 @@ Python templates for [Templetry](https://github.com/Templetry). One **parent rep
 
 | Form | What it is | Status |
 |---|---|---|
-| [`fastapi-service/`](fastapi-service/) | FastAPI service — src layout, pytest, optional Dockerfile | ✅ ready |
+| [`fastapi-service/`](fastapi-service/) | FastAPI service — src layout, pytest with TestClient, optional Dockerfile | ✅ ready |
+| [`cli-typer/`](cli-typer/) | CLI — Typer commands, src layout, pytest with CliRunner | ✅ ready |
 
 ## Usage
 

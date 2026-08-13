@@ -10,12 +10,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  fastapi-service:
-    name: fastapi-service (py${{ matrix.python }})
+  forms:
+    name: ${{ matrix.form }} (py${{ matrix.python }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
+        form: [fastapi-service, cli-typer]
         python: ["3.12", "3.13"]
     steps:
       - uses: actions/checkout@v4
@@ -26,7 +27,7 @@ jobs:
           chmod +x /usr/local/bin/templetry
       - name: Render
         run: |
-          templetry render --template ./fastapi-service --out "$RUNNER_TEMP/out" \
+          templetry render --template "./${{ matrix.form }}" --out "$RUNNER_TEMP/out" \
             --set "project_name=Verify App" --set "python_version=${{ matrix.python }}"
       - uses: actions/setup-python@v5
         with:
