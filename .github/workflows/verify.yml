@@ -1,0 +1,38 @@
+name: Verify forms
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fastapi-service:
+    name: fastapi-service (py${{ matrix.python }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install templetry
+        run: |
+          curl -sL -o /usr/local/bin/templetry \
+            "https://github.com/Templetry/engine/releases/download/v1.4.0/templetry-linux-amd64"
+          chmod +x /usr/local/bin/templetry
+      - name: Render
+        run: |
+          templetry render --template ./fastapi-service --out "$RUNNER_TEMP/out" \
+            --set "project_name=Verify App" --set "python_version=${{ matrix.python }}"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install and test rendered output
+        working-directory: ${{ runner.temp }}/out
+        run: |
+          pip install -e .[dev]
+          pytest
