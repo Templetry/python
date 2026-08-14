@@ -1,0 +1,7 @@
+schema_version: 1
+name: api-keys
+description: Machine access — hashed API keys with prefix lookup, scopes, expiry, revocation and last-used tracking
+variables:
+  - key: key_prefix
+    label: Prefix identifying keys of this service
+    default: tpl
