@@ -8,9 +8,15 @@ Python templates for [Templetry](https://github.com/Templetry). One **parent rep
 | [`cli-typer/`](cli-typer/) | CLI — Typer commands, src layout, pytest with CliRunner | ✅ ready |
 | [`fastapi-users/`](fastapi-users/) | User management API — SQLModel/SQLite, argon2 hashing, JWT auth | ✅ ready |
 
-Pieces ([ADR-0014](https://github.com/Templetry/wiki/blob/main/adr/0014-lazy-pieces.md)): `fastapi-users` ships **`crud-resource`**, a piece *per object* — adopt it once per entity and it lands the model, the CRUD router and its tests, renamed to your entity and auto-mounted through the routers socket:
+Pieces ([ADR-0014](https://github.com/Templetry/wiki/blob/main/adr/0014-lazy-pieces.md)) live in `_pieces/` and mount themselves through the routers socket, so adopting one edits no existing file:
+
+| Form | Piece | What it adds |
+|---|---|---|
+| `fastapi-users` | **`rbac`** | Roles, permissions and assignments after the [NIST model](https://github.com/Templetry/wiki/blob/main/study/industrial-pieces-v1.md) (ANSI/INCITS 359-2004), admin endpoints and a `require_permission` dependency |
+| `fastapi-users` | **`crud-resource`** | A whole entity: model, CRUD router and tests, renamed to your object |
 
 ```sh
+templetry add rbac ./my-api --set admin_role=admin
 templetry add crud-resource ./my-api --set entity=Product
 ```
 

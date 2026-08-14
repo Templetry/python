@@ -23,7 +23,7 @@ jobs:
       - name: Install templetry
         run: |
           curl -fsSL -o /usr/local/bin/templetry \
-            "https://github.com/Templetry/engine/releases/download/v1.6.0/templetry-linux-amd64"
+            "https://github.com/Templetry/engine/releases/download/v1.7.0/templetry-linux-amd64"
           chmod +x /usr/local/bin/templetry
       - name: Render
         run: |
@@ -39,21 +39,27 @@ jobs:
           pytest
 
   piece:
-    name: fastapi-users + crud-resource (entity=Product)
+    name: fastapi-users + ${{ matrix.case.piece }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        case:
+          - { piece: crud-resource, args: "--set entity=Product" }
+          - { piece: rbac, args: "--set admin_role=admin" }
     steps:
       - uses: actions/checkout@v4
       - name: Install templetry
         run: |
           curl -fsSL -o /usr/local/bin/templetry \
-            "https://github.com/Templetry/engine/releases/download/v1.6.0/templetry-linux-amd64"
+            "https://github.com/Templetry/engine/releases/download/v1.7.0/templetry-linux-amd64"
           chmod +x /usr/local/bin/templetry
-      - name: Render and adopt the entity piece
+      - name: Render and adopt the piece
         run: |
           templetry render --template ./fastapi-users --out "$RUNNER_TEMP/out" \
             --set "project_name=Verify App"
-          templetry add crud-resource "$RUNNER_TEMP/out" --template ./fastapi-users \
-            --set entity=Product
+          templetry add "${{ matrix.case.piece }}" "$RUNNER_TEMP/out" \
+            --template ./fastapi-users ${{ matrix.case.args }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"

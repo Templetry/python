@@ -1,0 +1,7 @@
+schema_version: 1
+name: rbac
+description: Role-based access control after the NIST model (ANSI/INCITS 359-2004) — roles, permissions, assignments and a permission dependency
+variables:
+  - key: admin_role
+    label: Name of the bootstrap role granted every permission
+    default: admin
