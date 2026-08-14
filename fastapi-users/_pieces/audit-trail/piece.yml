@@ -1,0 +1,7 @@
+schema_version: 1
+name: audit-trail
+description: Append-only record of who changed what and when, with a query endpoint for auditors
+variables:
+  - key: retention_days
+    label: Days of audit history the cleanup helper keeps (0 = forever)
+    default: "0"

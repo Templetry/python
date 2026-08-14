@@ -13,10 +13,16 @@ Pieces ([ADR-0014](https://github.com/Templetry/wiki/blob/main/adr/0014-lazy-pie
 | Form | Piece | What it adds |
 |---|---|---|
 | `fastapi-users` | **`rbac`** | Roles, permissions and assignments after the [NIST model](https://github.com/Templetry/wiki/blob/main/study/industrial-pieces-v1.md) (ANSI/INCITS 359-2004), admin endpoints and a `require_permission` dependency |
+| `fastapi-users` | **`audit-trail`** | Append-only "who changed what, when, from where", with a read-only query endpoint |
+| `fastapi-users` | **`soft-delete`** | `deleted_at` mixin, `alive()`/`deleted()` selects, restore and an explicit purge |
 | `fastapi-users` | **`crud-resource`** | A whole entity: model, CRUD router and tests, renamed to your object |
+
+They compose — CI builds an API with all four applied:
 
 ```sh
 templetry add rbac ./my-api --set admin_role=admin
+templetry add audit-trail ./my-api
+templetry add soft-delete ./my-api
 templetry add crud-resource ./my-api --set entity=Product
 ```
 

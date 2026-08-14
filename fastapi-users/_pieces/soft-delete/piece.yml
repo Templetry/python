@@ -1,0 +1,3 @@
+schema_version: 1
+name: soft-delete
+description: Deletion that preserves history — deleted_at column, default filtering, restore and purge

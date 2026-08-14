@@ -47,6 +47,8 @@ jobs:
         case:
           - { piece: crud-resource, args: "--set entity=Product" }
           - { piece: rbac, args: "--set admin_role=admin" }
+          - { piece: audit-trail, args: "" }
+          - { piece: soft-delete, args: "" }
     steps:
       - uses: actions/checkout@v4
       - name: Install templetry
@@ -64,6 +66,33 @@ jobs:
         with:
           python-version: "3.13"
       - name: Install and test augmented output
+        working-directory: ${{ runner.temp }}/out
+        run: |
+          pip install -e .[dev]
+          pytest
+
+  all-pieces:
+    name: fastapi-users + every piece together
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install templetry
+        run: |
+          curl -fsSL -o /usr/local/bin/templetry \
+            "https://github.com/Templetry/engine/releases/download/v1.7.0/templetry-linux-amd64"
+          chmod +x /usr/local/bin/templetry
+      - name: Render and adopt every piece
+        run: |
+          templetry render --template ./fastapi-users --out "$RUNNER_TEMP/out" \
+            --set "project_name=Verify App"
+          for piece in rbac audit-trail soft-delete; do
+            templetry add "$piece" "$RUNNER_TEMP/out" --template ./fastapi-users
+          done
+          templetry add crud-resource "$RUNNER_TEMP/out" --template ./fastapi-users --set entity=Product
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install and test the fully assembled API
         working-directory: ${{ runner.temp }}/out
         run: |
           pip install -e .[dev]
