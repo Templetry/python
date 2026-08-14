@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install templetry
         run: |
-          curl -sL -o /usr/local/bin/templetry \
+          curl -fsSL -o /usr/local/bin/templetry \
             "https://github.com/Templetry/engine/releases/download/v1.6.0/templetry-linux-amd64"
           chmod +x /usr/local/bin/templetry
       - name: Render
@@ -45,7 +45,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install templetry
         run: |
-          curl -sL -o /usr/local/bin/templetry \
+          curl -fsSL -o /usr/local/bin/templetry \
             "https://github.com/Templetry/engine/releases/download/v1.6.0/templetry-linux-amd64"
           chmod +x /usr/local/bin/templetry
       - name: Render and adopt the entity piece
