@@ -71,6 +71,23 @@ def test_machine_user_resolves_the_owner(client, auth, session) -> None:
     assert isinstance(user, User) and user.email == "a@example.com"
 
 
+def test_secret_may_contain_underscores(client, auth, session) -> None:
+    """Regression: token_urlsafe emits base64url, whose alphabet includes
+    '_'. Parsing must split the key at most twice or such keys never
+    authenticate — a failure that only shows up on some generated keys."""
+    from template_app.api_keys import generate_key
+    from template_app.security import hash_password
+
+    user = session.exec(select(User).where(User.email == "a@example.com")).one()
+    row, _ = generate_key(session, user, "underscored")
+    secret = "abc_def_ghi"
+    row.hashed_key = hash_password(secret)
+    session.add(row)
+    session.commit()
+
+    assert resolve(session, f"{SERVICE_PREFIX}_{row.prefix}_{secret}") is not None
+
+
 def test_keys_are_private_to_their_owner(client, auth, session) -> None:
     created = client.post("/api-keys", json={"name": "mine"}, headers=auth).json()
 

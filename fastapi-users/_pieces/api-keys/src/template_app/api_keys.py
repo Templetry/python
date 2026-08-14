@@ -53,7 +53,9 @@ def generate_key(session: Session, user: User, name: str = "", scopes: list[str]
 
 def resolve(session: Session, plaintext: str) -> ApiKey | None:
     """Find and verify a presented key, or None."""
-    parts = plaintext.split("_")
+    # Split at most twice: token_urlsafe uses the base64url alphabet, so the
+    # secret itself may contain underscores.
+    parts = plaintext.split("_", 2)
     if len(parts) != 3 or parts[0] != SERVICE_PREFIX:
         return None
     _, handle, secret = parts
