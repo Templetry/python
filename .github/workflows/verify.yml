@@ -16,14 +16,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        form: [fastapi-service, cli-typer]
+        form: [fastapi-service, cli-typer, fastapi-users]
         python: ["3.12", "3.13"]
     steps:
       - uses: actions/checkout@v4
       - name: Install templetry
         run: |
           curl -sL -o /usr/local/bin/templetry \
-            "https://github.com/Templetry/engine/releases/download/v1.4.0/templetry-linux-amd64"
+            "https://github.com/Templetry/engine/releases/download/v1.6.0/templetry-linux-amd64"
           chmod +x /usr/local/bin/templetry
       - name: Render
         run: |
@@ -33,6 +33,31 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - name: Install and test rendered output
+        working-directory: ${{ runner.temp }}/out
+        run: |
+          pip install -e .[dev]
+          pytest
+
+  piece:
+    name: fastapi-users + crud-resource (entity=Product)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install templetry
+        run: |
+          curl -sL -o /usr/local/bin/templetry \
+            "https://github.com/Templetry/engine/releases/download/v1.6.0/templetry-linux-amd64"
+          chmod +x /usr/local/bin/templetry
+      - name: Render and adopt the entity piece
+        run: |
+          templetry render --template ./fastapi-users --out "$RUNNER_TEMP/out" \
+            --set "project_name=Verify App"
+          templetry add crud-resource "$RUNNER_TEMP/out" --template ./fastapi-users \
+            --set entity=Product
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install and test augmented output
         working-directory: ${{ runner.temp }}/out
         run: |
           pip install -e .[dev]

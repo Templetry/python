@@ -1,0 +1,14 @@
+schema_version: 1
+name: crud-resource
+description: A full CRUD resource — model, router and tests — for one entity
+variables:
+  - key: entity
+    label: Entity name (singular, e.g. Product)
+    default: Item
+identity:
+  - from: "TemplateEntity"         # model class, schemas
+    to: "{entity.pascal}"
+  - from: "template_entity"        # module names, table name, path segment
+    to: "{entity.snake}"
+  - from: "template-entity"        # route prefix
+    to: "{entity.kebab}"
