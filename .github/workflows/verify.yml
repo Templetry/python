@@ -91,3 +91,24 @@ jobs:
         run: |
           pip install -e .[dev]
           pytest
+
+  # One run with every optional feature off, so profiles being default-on
+  # never hides a form that stopped building without them.
+  minimal:
+    name: fastapi-service (minimal)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Templetry/.github/actions/setup-templetry@main
+      - name: Render
+        run: |
+          templetry render --template ./fastapi-service --out "$RUNNER_TEMP/out" \
+            --set "project_name=Verify App" --set "python_version=3.13" --preset minimal
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install and test rendered output
+        working-directory: ${{ runner.temp }}/out
+        run: |
+          pip install -e .[dev]
+          pytest
