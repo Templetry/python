@@ -50,6 +50,7 @@ jobs:
           - { piece: audit-trail, args: "" }
           - { piece: soft-delete, args: "" }
           - { piece: api-keys, args: "--set key_prefix=verify" }
+          - { piece: verifactu, args: "--set issuer_nif=B12345678" }
     steps:
       - uses: actions/checkout@v4
       - name: Install templetry
@@ -86,7 +87,7 @@ jobs:
         run: |
           templetry render --template ./fastapi-users --out "$RUNNER_TEMP/out" \
             --set "project_name=Verify App"
-          for piece in rbac audit-trail soft-delete api-keys; do
+          for piece in rbac audit-trail soft-delete api-keys verifactu; do
             templetry add "$piece" "$RUNNER_TEMP/out" --template ./fastapi-users
           done
           templetry add crud-resource "$RUNNER_TEMP/out" --template ./fastapi-users --set entity=Product

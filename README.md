@@ -16,6 +16,7 @@ Pieces ([ADR-0014](https://github.com/Templetry/wiki/blob/main/adr/0014-lazy-pie
 | `fastapi-users` | **`audit-trail`** | Append-only "who changed what, when, from where", with a read-only query endpoint |
 | `fastapi-users` | **`soft-delete`** | `deleted_at` mixin, `alive()`/`deleted()` selects, restore and an explicit purge |
 | `fastapi-users` | **`api-keys`** | Machine access: hashed keys with prefix lookup, scopes, expiry, revocation and last-used tracking |
+| `fastapi-users` | **`verifactu`** 🇪🇸 | Spain's RD 1007/2023 invoicing records: SHA-256 hash chain, append-only registry, event log, QR payload and chain verification ([study IX](https://github.com/Templetry/wiki/blob/main/study/verifactu-v1.md)) |
 | `fastapi-users` | **`crud-resource`** | A whole entity: model, CRUD router and tests, renamed to your object |
 
 They compose — CI builds an API with all four applied:
