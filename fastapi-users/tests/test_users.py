@@ -1,5 +1,5 @@
 def test_healthz(client) -> None:
-    assert client.get("/healthz").json() == {"status": "ok"}
+    assert client.get("/healthz").json()["status"] == "ok"
 
 
 def test_register_and_login(client) -> None:

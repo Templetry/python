@@ -25,10 +25,30 @@ identity:
     to: "{project_name.pascal}"
 
 features:
+  - key: environments
+    label: development / staging / production profiles (ADR-0018)
+    default: true
+    files:
+      - "src/template_app/settings.py"
+      - ".env.development"
+      - ".env.staging"
+      - ".env.production"
+      - "tests/test_settings.py"
+    patches:
+      - file: pyproject.toml
+        op: add
+        path: /project/dependencies/-
+        value: "pydantic-settings>=2.5"
+
   - key: docker
     label: Dockerfile (python slim + uvicorn)
     default: true
     files: ["Dockerfile", ".dockerignore"]
+
+presets:
+  - key: minimal
+    label: Single configuration, no Docker
+    features: {environments: false, docker: false}
 
 verify:
   image: python:3.13-slim

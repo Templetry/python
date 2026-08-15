@@ -10,6 +10,12 @@ from fastapi import APIRouter, FastAPI
 from template_app import routers
 from template_app.db import init_db
 
+# tpl:if environments
+from template_app.settings import get_settings
+
+settings = get_settings()
+# tpl:endif
+
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
@@ -17,12 +23,22 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     yield
 
 
+# tpl:if environments
+app = FastAPI(title="TemplateApp", lifespan=lifespan, debug=settings.verbose_errors)
+# tpl:endif
+# tpl:if !environments
 app = FastAPI(title="TemplateApp", lifespan=lifespan)
+# tpl:endif
 
 
 @app.get("/healthz", tags=["meta"])
 def healthz() -> dict[str, str]:
+    # tpl:if environments
+    return {"status": "ok", "environment": settings.environment}
+    # tpl:endif
+    # tpl:if !environments
     return {"status": "ok"}
+    # tpl:endif
 
 
 def include_routers(application: FastAPI) -> None:

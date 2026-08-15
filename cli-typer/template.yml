@@ -24,6 +24,27 @@ identity:
   - from: "TemplateApp"            # docstrings, help text
     to: "{project_name.pascal}"
 
+features:
+  - key: environments
+    label: development / staging / production profiles (ADR-0018)
+    default: true
+    files:
+      - "src/template_app/settings.py"
+      - ".env.development"
+      - ".env.staging"
+      - ".env.production"
+      - "tests/test_settings.py"
+    patches:
+      - file: pyproject.toml
+        op: add
+        path: /project/dependencies/-
+        value: "pydantic-settings>=2.5"
+
+presets:
+  - key: minimal
+    label: Single configuration
+    features: {environments: false}
+
 verify:
   image: python:3.13-slim
   run: pip install -e .[dev] && pytest
