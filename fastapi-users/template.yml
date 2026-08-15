@@ -1,8 +1,9 @@
 schema_version: 1
 name: python-fastapi-users
 description: User management API — FastAPI + SQLModel/SQLite, password hashing, JWT auth, pytest
-platform: backend
-framework: fastapi
+kinds: [backend, database]
+languages: [python]
+frameworks: [fastapi, sqlmodel]
 
 variables:
   - key: project_name

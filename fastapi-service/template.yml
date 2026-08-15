@@ -1,8 +1,9 @@
 schema_version: 1
 name: python-fastapi-service
 description: FastAPI service — src layout, pytest with TestClient, optional Dockerfile
-platform: backend
-framework: fastapi
+kinds: [backend]
+languages: [python]
+frameworks: [fastapi]
 
 variables:
   - key: project_name

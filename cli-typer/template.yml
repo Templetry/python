@@ -1,8 +1,9 @@
 schema_version: 1
 name: python-cli-typer
 description: Python CLI — Typer commands, src layout, pytest with CliRunner
-platform: cli
-framework: typer
+kinds: [cli]
+languages: [python]
+frameworks: [typer]
 
 variables:
   - key: project_name
