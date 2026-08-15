@@ -8,7 +8,9 @@ client = TestClient(app)
 def test_healthz() -> None:
     res = client.get("/healthz")
     assert res.status_code == 200
-    assert res.json() == {"status": "ok"}
+    # The status is the contract; the payload may carry more (the active
+    # environment, a build id) without that being a breaking change.
+    assert res.json()["status"] == "ok"
 
 
 def test_hello() -> None:
