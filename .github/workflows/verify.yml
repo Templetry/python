@@ -24,11 +24,7 @@ jobs:
         python: ["3.12", "3.13"]
     steps:
       - uses: actions/checkout@v4
-      - name: Install templetry
-        run: |
-          curl -fsSL -o /usr/local/bin/templetry \
-            "https://github.com/Templetry/engine/releases/download/v1.7.0/templetry-linux-amd64"
-          chmod +x /usr/local/bin/templetry
+      - uses: Templetry/.github/actions/setup-templetry@main
       - name: Render
         run: |
           templetry render --template "./${{ matrix.form }}" --out "$RUNNER_TEMP/out" \
@@ -57,11 +53,7 @@ jobs:
           - { piece: verifactu, args: "--set issuer_nif=B12345678" }
     steps:
       - uses: actions/checkout@v4
-      - name: Install templetry
-        run: |
-          curl -fsSL -o /usr/local/bin/templetry \
-            "https://github.com/Templetry/engine/releases/download/v1.7.0/templetry-linux-amd64"
-          chmod +x /usr/local/bin/templetry
+      - uses: Templetry/.github/actions/setup-templetry@main
       - name: Render and adopt the piece
         run: |
           templetry render --template ./fastapi-users --out "$RUNNER_TEMP/out" \
@@ -82,11 +74,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install templetry
-        run: |
-          curl -fsSL -o /usr/local/bin/templetry \
-            "https://github.com/Templetry/engine/releases/download/v1.7.0/templetry-linux-amd64"
-          chmod +x /usr/local/bin/templetry
+      - uses: Templetry/.github/actions/setup-templetry@main
       - name: Render and adopt every piece
         run: |
           templetry render --template ./fastapi-users --out "$RUNNER_TEMP/out" \
