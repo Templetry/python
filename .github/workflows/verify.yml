@@ -4,6 +4,10 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
+  schedule:
+    # Weekly, so upstream drift surfaces here and not in a user project.
+    - cron: "0 6 * * 1"
 
 concurrency:
   group: verify-${{ github.ref }}
