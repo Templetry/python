@@ -1,0 +1,56 @@
+name: A template is wrong
+description: A generated project does not build, or is generated incorrectly
+title: "template: "
+labels: ["bug", "template"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Every form is built by its parent's CI on every push, so a template
+        that does not build is either a combination CI does not cover or
+        something that moved upstream. Both are worth reporting.
+
+  - type: input
+    id: form
+    attributes:
+      label: Which form?
+      placeholder: "python/fastapi-users"
+    validations:
+      required: true
+
+  - type: textarea
+    id: command
+    attributes:
+      label: The exact command
+      description: Including every --set, --feature and --preset.
+      render: shell
+      placeholder: |
+        templetry init python/fastapi-users --out ./api --set "project_name=My Api" --feature rbac=false
+    validations:
+      required: true
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: The error, as it appeared. Trim it, but do not paraphrase it.
+      render: shell
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: templetry version
+      description: From `templetry version`, or the desktop's About panel.
+      placeholder: "v1.10.1"
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: OS and toolchain
+      placeholder: "Windows 11, Python 3.13"
+    validations:
+      required: true
