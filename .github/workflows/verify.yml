@@ -9,6 +9,10 @@ on:
     # Weekly, so upstream drift surfaces here and not in a user project.
     - cron: "0 6 * * 1"
 
+permissions:
+  # Render and build only; nothing here writes to the repository.
+  contents: read
+
 concurrency:
   group: verify-${{ github.ref }}
   cancel-in-progress: true
