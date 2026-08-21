@@ -116,3 +116,12 @@ jobs:
         run: |
           pip install -e .[dev]
           pytest
+
+  # The commands AGENTS.md hands to an agent have to be the ones this form is
+  # verified with. Drift here is silent: the wrong command just runs.
+  agents:
+    name: AGENTS.md matches the manifests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Templetry/.github/actions/check-agents@main
