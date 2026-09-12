@@ -1,24 +1,40 @@
 import discord
 from discord.ext import commands
 
+from .. import storage
+
 
 class Moderation(commands.Cog):
-    """Basic moderation: kick, ban, purge."""
+    """Basic moderation: kick, ban, purge.
+
+    Actions are optionally echoed to a mod-log channel, configured via
+    `/settings mod_log`.
+    """
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
+
+    async def _log(self, guild: discord.Guild, message: str) -> None:
+        channel_id = storage.get(guild.id, "mod_log_channel_id")
+        if not channel_id:
+            return
+        channel = guild.get_channel(channel_id)
+        if isinstance(channel, discord.TextChannel):
+            await channel.send(message)
 
     @discord.slash_command(name="kick", description="Kick a member")
     @commands.has_permissions(kick_members=True)
     async def kick(self, ctx: discord.ApplicationContext, member: discord.Member, reason: str = "No reason given") -> None:
         await member.kick(reason=reason)
         await ctx.respond(f"👢 {member.mention} was kicked. Reason: {reason}")
+        await self._log(ctx.guild, f"👢 {member} was kicked by {ctx.author}. Reason: {reason}")
 
     @discord.slash_command(name="ban", description="Ban a member")
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx: discord.ApplicationContext, member: discord.Member, reason: str = "No reason given") -> None:
         await member.ban(reason=reason)
         await ctx.respond(f"🔨 {member.mention} was banned. Reason: {reason}")
+        await self._log(ctx.guild, f"🔨 {member} was banned by {ctx.author}. Reason: {reason}")
 
     @discord.slash_command(name="purge", description="Delete a number of recent messages")
     @commands.has_permissions(manage_messages=True)
@@ -26,6 +42,7 @@ class Moderation(commands.Cog):
         amount = max(1, min(amount, 100))
         deleted = await ctx.channel.purge(limit=amount)
         await ctx.respond(f"🧹 Deleted {len(deleted)} messages.", ephemeral=True)
+        await self._log(ctx.guild, f"🧹 {ctx.author} purged {len(deleted)} messages in {ctx.channel.mention}.")
 
 
 def setup(bot: commands.Bot) -> None:

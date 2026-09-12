@@ -4,14 +4,15 @@ Operating contract for AI agents and automation helpers working in this project.
 
 ## Mission
 
-- One capability per cog under `src/template_bot/cogs/`; wiring (intents, extension loading) stays in `main.py`.
-- Read configuration only through `config.Settings` — nothing else should call `os.environ` directly.
+- One capability per cog under `src/template_bot/cogs/`; every module there is loaded automatically (`main.py`'s `_discover_extensions`) — a new cog needs no wiring beyond a `setup(bot)` function.
+- Read configuration only through `config.Settings` (env-sourced: token, prefix) or `storage.py` (per-guild, runtime-configured) — nothing else should call `os.environ` directly or read/write files on its own.
 
 ## Core Rules
 
 - New commands are slash commands (`discord.slash_command`) unless there is a specific reason to use a prefix command.
-- A new cog needs a `setup(bot)` function and gets added to `EXTENSIONS` in `main.py`.
-- Every cog that touches `bot.settings` gets a test that constructs the bot with fake settings and checks it loads.
+- Per-guild state (a channel id, a role id, anything a server admin configures) goes through `storage.get`/`storage.set`, not `config.Settings` — `Settings` is process-wide and env-sourced, `storage` is per-guild and mutable at runtime.
+- Don't catch and format command errors inside a cog; let them propagate to `errors.py`'s global handler unless the cog needs a genuinely custom message.
+- Every cog that touches `bot.settings` or `storage` gets a test that constructs the bot with fake settings (and an isolated storage path) and checks it behaves.
 - Update docs in the same change when behavior or process changes.
 
 ## Required Checks Before Finishing

@@ -1,38 +1,39 @@
 import logging
+import pkgutil
 
 import discord
 from discord.ext import commands
 
+from . import cogs
 from .config import Settings
+from .errors import register as register_error_handlers
+from .logging_setup import configure
 
 log = logging.getLogger("bot")
 
-EXTENSIONS = (
-    # tpl:if moderation
-    "template_bot.cogs.moderation",
-    # tpl:endif
-    # tpl:if welcome
-    "template_bot.cogs.welcome",
-    # tpl:endif
-    # tpl:if music
-    "template_bot.cogs.music",
-    # tpl:endif
-    "template_bot.cogs.utility",
-)
+
+def _discover_extensions() -> list[str]:
+    """Every module under `cogs/` is loaded automatically.
+
+    A feature that's off never has its cog file rendered here in the first
+    place (see template.yml's `features[].files`), so this needs no
+    conditional logic — drop a new cog in and it's wired up for free.
+    """
+    return [f"{cogs.__name__}.{module.name}" for module in pkgutil.iter_modules(cogs.__path__)]
 
 
 def build_bot(settings: Settings) -> commands.Bot:
     intents = discord.Intents.default()
     intents.message_content = True
-    # tpl:if welcome
     intents.members = True
-    # tpl:endif
 
     bot = commands.Bot(command_prefix=settings.prefix, intents=intents)
     bot.settings = settings  # type: ignore[attr-defined]
 
-    for extension in EXTENSIONS:
+    for extension in _discover_extensions():
         bot.load_extension(extension)
+
+    register_error_handlers(bot)
 
     @bot.event
     async def on_ready() -> None:
@@ -42,7 +43,7 @@ def build_bot(settings: Settings) -> commands.Bot:
 
 
 def main() -> None:
-    logging.basicConfig(level=logging.INFO)
+    configure()
     settings = Settings.from_env()
     bot = build_bot(settings)
     bot.run(settings.token)

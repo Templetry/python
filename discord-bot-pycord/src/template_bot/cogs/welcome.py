@@ -1,24 +1,30 @@
 import discord
 from discord.ext import commands
 
+from .. import storage
+
 
 class Welcome(commands.Cog):
-    """Greets new members and optionally assigns an auto-role."""
+    """Greets new members and optionally assigns an auto-role.
+
+    Both are configured per-guild via `/settings welcome_channel` and
+    `/settings auto_role`.
+    """
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member) -> None:
-        settings = self.bot.settings  # type: ignore[attr-defined]
-
-        if settings.welcome_channel_id:
-            channel = member.guild.get_channel(settings.welcome_channel_id)
+        channel_id = storage.get(member.guild.id, "welcome_channel_id")
+        if channel_id:
+            channel = member.guild.get_channel(channel_id)
             if isinstance(channel, discord.TextChannel):
                 await channel.send(f"👋 Welcome to the server, {member.mention}!")
 
-        if settings.auto_role_id:
-            role = member.guild.get_role(settings.auto_role_id)
+        role_id = storage.get(member.guild.id, "auto_role_id")
+        if role_id:
+            role = member.guild.get_role(role_id)
             if role is not None:
                 await member.add_roles(role, reason="Auto-role on join")
 

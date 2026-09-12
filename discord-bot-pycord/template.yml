@@ -1,6 +1,6 @@
 schema_version: 1
 name: python-discord-bot-pycord
-description: Discord bot — py-cord, cogs for moderation/welcome/music, pytest
+description: Discord bot — py-cord, auto-loading cogs, per-guild settings storage, pytest
 kinds: [backend]
 languages: [python]
 frameworks: [pycord]
@@ -28,16 +28,36 @@ identity:
   - from: "TemplateBot"            # log lines, README title
     to: "{project_name.pascal}"
 
+# Base (always present, no matter which features are on): bot bootstrap with
+# auto-discovered cog loading, logging, a global error handler, and a small
+# per-guild JSON store — the plumbing every Discord bot needs regardless of
+# what it's actually for. Everything below is a capability built on top of it.
 features:
+  - key: settings
+    label: "/settings admin commands backed by per-guild storage (welcome channel, auto-role, mod-log channel)"
+    default: true
+    files: ["src/template_bot/cogs/settings.py"]
+
+  - key: admin
+    label: Owner-only maintenance commands (sync, reload, shutdown)
+    default: true
+    files: ["src/template_bot/cogs/admin.py"]
+
   - key: moderation
-    label: Moderation commands (kick, ban, purge)
+    label: Moderation commands (kick, ban, purge), optionally logged to a mod-log channel
     default: true
     files: ["src/template_bot/cogs/moderation.py"]
 
   - key: welcome
-    label: Welcome message + auto-role on member join
+    label: Welcome message + auto-role on member join, configured via /settings
     default: true
+    requires: [settings]
     files: ["src/template_bot/cogs/welcome.py"]
+
+  - key: custom_commands
+    label: Let server admins define simple text-response commands at runtime
+    default: true
+    files: ["src/template_bot/cogs/custom_commands.py"]
 
   - key: music
     label: Voice channel music playback (yt-dlp + ffmpeg required on the host)
@@ -55,11 +75,11 @@ features:
 
 presets:
   - key: minimal
-    label: Utility commands only, no moderation/welcome/music
-    features: {moderation: false, welcome: false, music: false}
+    label: Bare bot — only ping/uptime, no admin tooling or capability cogs
+    features: {settings: false, admin: false, moderation: false, welcome: false, custom_commands: false, music: false}
   - key: full
     label: Everything, including music
-    features: {moderation: true, welcome: true, music: true}
+    features: {settings: true, admin: true, moderation: true, welcome: true, custom_commands: true, music: true}
 
 verify:
   image: python:3.13-slim
